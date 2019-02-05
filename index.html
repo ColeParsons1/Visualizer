@@ -59,21 +59,16 @@
 
         function init() {
 
-            /*global pointLight*/
-            /*global bp*/
-            /*global h*/
-            /*global d*/
-
             camera = new THREE.PerspectiveCamera(116, window.innerWidth / window.innerHeight, 60, 188800);
             camera.position.z = 500;
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x000000);   //010102 000026 4d81e8 2162e3 2793e8 0x0d001a  0076A2  0x1990BB  2F9BC1
 
-            var geometry = new THREE.TorusBufferGeometry(302, 2.5, { radius: 10.0, arc: Math.cos() * 1 });  //( 20, 50, 50, 50 ); ( 124, 130, 4, 38, 3.6, 2.9, 0 );
+            var geometry = new THREE.TorusBufferGeometry(302, 2, { radius: 10.0, arc: Math.cos() * 1 });  //( 20, 50, 50, 50 ); ( 124, 130, 4, 38, 3.6, 2.9, 0 );
             var material = new THREE.PointsMaterial({ color: 0x42C0FB, needsUpdate: true, depthTest: true, fog: true, autoClearColor: true, antialias: true }); //00baff 0080ff 24a5e1 892d0 016cf7 recent:3676e5 2b6be4 3d84ff 70A4FF f8f0a4 fce996 fdb813  FCD853 FDCB64 meshbasic
-            var geometry2 = new THREE.ConeBufferGeometry(126, 130, 3.5, 38, 3.5, 2.5);  //( 20, 50, 50, 50 );  ( 124, 130, 3.5, 38, 3.5 );
+            var geometry2 = new THREE.ConeBufferGeometry(126, 130, 3.5, 38, 3, 2);  //( 20, 50, 50, 50 );  ( 124, 130, 3.5, 38, 3.5 );
             var material2 = new THREE.MeshNormalMaterial({ arc: Math.cos() * 1, size: 2.0, needsUpdate: true, depthTest: true, fog: true, autoClearColor: true, antialias: true });
-            var geometry3 = new THREE.TorusBufferGeometry(202, 2.5);  //( 20, 50, 50, 50 );
+            var geometry3 = new THREE.TorusBufferGeometry(202, 2);  //( 20, 50, 50, 50 );
             var mat3 = new THREE.PointsMaterial({ color: 0x3676e5, needsUpdate: true, depthTest: true, fog: true, autoClearColor: true, antialias: true, size: 5.0 }); // bdf7 ff32ff 00ffff ff8000 fe9813 FFAE19 FFA500 ffb83d xefa419 8ffcff
             var geometry4 = new THREE.TorusBufferGeometry(124, 18, 2, 1);  //( 20, 50, 50, 50 );
             var mat4 = new THREE.PointsMaterial({ color: 0xf29900, needsUpdate: true, depthTest: true, fog: true, autoClearColor: true });  //ff980f 29b8fa 42C0FB 67C8FF 66e6d9
@@ -323,25 +318,15 @@
 
         function render() {
 
-            /*global THREE*/
-            /*global fftSize*/
-            /*global performance*/
-            /*global root2*/
-            /*global root3*/
-            /*global root4*/
-            /*global textureFlare0*/
-            /*global textureFlare3*/
-            /*global app*/
-            /*global object3*/
 
-            var time = performance.now() * 0.000004;    //call the function that plays the song, and feed the song through this formula
+            var time = performance.now() * 0.000004;    
             var rx = Math.abs(Math.sin(Math.sin(time) * 2.6) * Math.sin(1.2) * 6.2);
-            var ry = Math.abs(Math.cos(time * 1.0) * Math.sin(3.4) * .1); //fav  //wasnt
+            var ry = Math.abs(Math.cos(time * 1.0) * Math.sin(3.4) * .1);   
             var rz = Math.cos(time * 6.0) * Math.sin(1.2) * .01;
             var rs2 = (Math.cos(time) * 6.02) * Math.sin(1.2) * .01;
-            var ry2 = Math.cos(time * 3.02) * Math.sin(.2) * .001;                   //wasnt
-            var rs3 = Math.cos(Math.cos(time) * 1.02) * .8;					//was sin
-            var rs4 = Math.abs(Math.cos(time * 1.02) * Math.sin(.2) * 5);					//wasnt
+            var ry2 = Math.cos(time * 3.02) * Math.sin(.2) * .001;                   
+            var rs3 = Math.cos(Math.cos(time) * 1.02) * .8;					
+            var rs4 = Math.abs(Math.cos(time * 1.02) * Math.sin(.2) * 5);					
             var rs5 = Math.abs(Math.sin(Math.cos(time) * 1.02) * Math.sin(.2) * 6.6);
             var sx = Math.abs(Math.sin(Math.cos(time) * 1.02) * Math.sin(.2) * 6.6);
             var sz = Math.abs(Math.sin(Math.cos(time) * 10.02) * Math.sin(.2) * 6.6);
