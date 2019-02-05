@@ -41,14 +41,8 @@
     <link rel="stylesheet" type="text/css" href="/three.js/examples/styles.css">
 </head>
 <body>
+    
     <script>
-        audiojs.events.ready(function () {
-            var as = audiojs.createAll();
-        });
-    </script>
-    <script>
-
-        //music usage: We are fury & crystal skies - looking for you, Alexander Lewis x KRANE - Sorbet Guts, Far Out - Apex
 
         var app = app || {};
         app.init = init;
@@ -108,14 +102,6 @@
             var starField6 = new THREE.Points(starsGeometry6, starsMaterial6);
             scene.add(starField6);
 
-
-            var points = [];
-            for (var i = 0; i < 1; i++) {
-                points.push(new THREE.Vector2(Math.sin(i * 0.2) * 10 + 5, (i - 5) * 2)); //when this block is deleted, the music player suddenly shows up
-            }
-
-
-
             material3 = new THREE.PointsMaterial({
                 vertexColors: THREE.VertexColors,
                 needsUpdate: true,
@@ -124,9 +110,7 @@
                 sizeAttenuation: true
             });
 
-            points = new THREE.Points(geometry, material3);
-            points2 = new THREE.Points(geometry2, material);
-            points3 = new THREE.Points(geometry2, material3);
+           
 
             for (var i = 0; i < geometry.length; i++) {
                 scene.add(points);
