@@ -101,15 +101,6 @@
             var starsMaterial6 = new THREE.PointsMaterial({ color: 0x42fbda, size: 1.0, depthTest: true, needsUpdate: true, opacity: 0.5 });
             var starField6 = new THREE.Points(starsGeometry6, starsMaterial6);
             scene.add(starField6);
-
-            material3 = new THREE.PointsMaterial({
-                vertexColors: THREE.VertexColors,
-                needsUpdate: true,
-                depthTest: true,
-                opacity: 3,
-                sizeAttenuation: true
-            });
-
            
 
             for (var i = 0; i < geometry.length; i++) {
