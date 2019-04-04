@@ -26,19 +26,13 @@
     <script src="js/postprocessing/ShaderPass.js"></script>
     <script src="js/renderers/WebGLDeferredRenderer.js"></script>
     <script src="js/loaders/GLTFLoader.js"></script>
-    <script src="examples/audioLoader.js"></script>
-    <script src="examples/actions.js"></script>
-    <script src="examples/auth.js"></script>
-    <script src="examples/callback.js"></script>
-    <script src="examples/index.js"></script>
-    <script src="examples/login.js"></script>
-    <script src="examples/config.js"></script>
-    <script src="../../src/howler.core.js"></script>
-    <script src="./siriwave.js"></script>
+    <script src="main/audioLoader.js"></script>
+    <script src="main/actions.js"></script>
+    <script src="main/config.js"></script>
     <script src="./player.js"></script>
     <script src="/three.js/examples/audio.js"></script>
     <script src="/audiojs/audio.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="/three.js/examples/styles.css">
+    <link rel="stylesheet" type="text/css" href="/three.js/main/styles.css">
 </head>
 <body>
     
@@ -49,7 +43,7 @@
         app.animate = animate;
         var camera, scene, renderer, stats;
         var fftSize = 128;
-        var geometry, root;
+        var root;
         var mouseX = 0, mouseY = 0;
         var windowHalfX = window.innerWidth / 2;
         var windowHalfY = window.innerHeight / 2;
