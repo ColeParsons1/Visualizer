@@ -64,36 +64,96 @@
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x000000);   //010102 000026 4d81e8 2162e3 2793e8 0x0d001a  0076A2  0x1990BB  2F9BC1
 
-            var geometry = new THREE.TorusBufferGeometry(302, 2, { radius: 10.0, arc: Math.cos() * 1 });  //( 20, 50, 50, 50 ); ( 124, 130, 4, 38, 3.6, 2.9, 0 );
-            var material = new THREE.PointsMaterial({ color: 0x42C0FB, needsUpdate: true, depthTest: true, fog: true, autoClearColor: true, antialias: true }); //00baff 0080ff 24a5e1 892d0 016cf7 recent:3676e5 2b6be4 3d84ff 70A4FF f8f0a4 fce996 fdb813  FCD853 FDCB64 meshbasic
+            var geometry = new THREE.TorusBufferGeometry(302, 2);  //( 20, 50, 50, 50 ); ( 124, 130, 4, 38, 3.6, 2.9, 0 );
+            var material = new THREE.PointsMaterial({
+		    color: 0x42C0FB,
+		    needsUpdate: true,
+		    depthTest: true,
+		    fog: true, autoClearColor: true,
+		    antialias: true }); //00baff 0080ff 24a5e1 892d0 016cf7 recent:3676e5 2b6be4 3d84ff 70A4FF f8f0a4 fce996 fdb813  FCD853 FDCB64 meshbasic
             var geometry2 = new THREE.ConeBufferGeometry(126, 130, 3.5, 38, 3, 2);  //( 20, 50, 50, 50 );  ( 124, 130, 3.5, 38, 3.5 );
-            var material2 = new THREE.MeshNormalMaterial({ arc: Math.cos() * 1, size: 2.0, needsUpdate: true, depthTest: true, fog: true, autoClearColor: true, antialias: true });
+            var material2 = new THREE.MeshNormalMaterial({
+		    arc: Math.cos() * 1,
+		    size: 2.0,
+		    needsUpdate: true,
+		    depthTest: true,
+		    fog: true,
+		    autoClearColor: true,
+		    antialias: true });
             var geometry3 = new THREE.TorusBufferGeometry(202, 2);  //( 20, 50, 50, 50 );
-            var mat3 = new THREE.PointsMaterial({ color: 0x3676e5, needsUpdate: true, depthTest: true, fog: true, autoClearColor: true, antialias: true, size: 5.0 }); // bdf7 ff32ff 00ffff ff8000 fe9813 FFAE19 FFA500 ffb83d xefa419 8ffcff
+            var mat3 = new THREE.PointsMaterial({
+		    color: 0x3676e5,
+		    needsUpdate: true,
+		    depthTest: true,
+		    fog: true,
+		    autoClearColor: true,
+		    antialias: true,
+		    size: 5.0 
+	    }); // bdf7 ff32ff 00ffff ff8000 fe9813 FFAE19 FFA500 ffb83d xefa419 8ffcff
             var geometry4 = new THREE.TorusBufferGeometry(124, 18, 2, 1);  //( 20, 50, 50, 50 );
-            var mat4 = new THREE.PointsMaterial({ color: 0xf29900, needsUpdate: true, depthTest: true, fog: true, autoClearColor: true });  //ff980f 29b8fa 42C0FB 67C8FF 66e6d9
+            var mat4 = new THREE.PointsMaterial({ 
+		    color: 0xf29900,
+		    needsUpdate: true,
+		    depthTest: true,
+		    fog: true,
+		    autoClearColor: true
+	    });  //ff980f 29b8fa 42C0FB 67C8FF 66e6d9
             var starsGeometry = new THREE.Geometry();
-            var starsMaterial = new THREE.PointsMaterial({ color: 0xc9c9c9, needsUpdate: true, opacity: 0.5, size: 3.0 });
+            var starsMaterial = new THREE.PointsMaterial({ 
+		    color: 0xc9c9c9,
+		    needsUpdate: true,
+		    opacity: 0.5,
+		    size: 3.0 
+	    });
             var starField = new THREE.Points(starsGeometry, starsMaterial);
             scene.add(starField);
             var starsGeometry2 = new THREE.Geometry();
-            var starsMaterial2 = new THREE.PointsMaterial({ color: 0x00E6E6, depthTest: true, needsUpdate: true, opacity: 0.5 });
+            var starsMaterial2 = new THREE.PointsMaterial({
+		    color: 0x00E6E6,
+		    depthTest: true,
+		    needsUpdate: true,
+		    opacity: 0.5 
+	    });
             var starField2 = new THREE.Points(starsGeometry2, starsMaterial2);
             scene.add(starField2);
             var starsGeometry3 = new THREE.Geometry();
-            var starsMaterial3 = new THREE.PointsMaterial({ color: 0x00e6e6, opacity: 2.0, depthTest: true, needsUpdate: true, opacity: 0.5 });
+            var starsMaterial3 = new THREE.PointsMaterial({ 
+		    color: 0x00e6e6,
+		    opacity: 2.0,
+		    depthTest: true,
+		    needsUpdate: true,
+		    opacity: 0.5 
+	    });
             var starField3 = new THREE.Points(starsGeometry3, starsMaterial3);
             scene.add(starField3);
             var starsGeometry4 = new THREE.Geometry();
-            var starsMaterial4 = new THREE.PointsMaterial({ color: 0xffffff, size: 1.0, depthTest: true, needsUpdate: true, opacity: 0.5 });
+            var starsMaterial4 = new THREE.PointsMaterial({ 
+		    color: 0xffffff,
+		    size: 1.0,
+		    depthTest: true,
+		    needsUpdate: true,
+		    opacity: 0.5 
+	    });
             var starField4 = new THREE.Points(starsGeometry4, starsMaterial4);
             scene.add(starField4);
             var starsGeometry5 = new THREE.Geometry();
-            var starsMaterial5 = new THREE.PointsMaterial({ color: 0x939393, size: 1.0, depthTest: true, needsUpdate: true, opacity: 0.5 });
+            var starsMaterial5 = new THREE.PointsMaterial({ 
+		    color: 0x939393,
+		    size: 1.0,
+		    depthTest: true,
+		    needsUpdate: true,
+		    opacity: 0.5 
+	    });
             var starField5 = new THREE.Points(starsGeometry5, starsMaterial5);
             scene.add(starField5);
             var starsGeometry6 = new THREE.Geometry();
-            var starsMaterial6 = new THREE.PointsMaterial({ color: 0x42fbda, size: 1.0, depthTest: true, needsUpdate: true, opacity: 0.5 });
+            var starsMaterial6 = new THREE.PointsMaterial({ 
+		    color: 0x42fbda,
+		    size: 1.0,
+		    depthTest: true,
+		    needsUpdate: true,
+		    opacity: 0.5 
+	    });
             var starField6 = new THREE.Points(starsGeometry6, starsMaterial6);
             scene.add(starField6);
            
