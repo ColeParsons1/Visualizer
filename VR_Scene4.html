@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - particles - sprites</title>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<!-- Origin Trial Token, feature = WebVR (For Chrome M62+), origin = https://threejs.org, expires = 2018-07-25 -->
+		<meta http-equiv="origin-trial" data-feature="WebVR (For Chrome M62+)" data-expires="2018-07-25" content="AtW06hJFoVWUJTZf5gqymMIlrR60JJi5MsSe44qsHjrCmzDUNmvaTtAVg+K9O9jFpjJtn/W9jvG//hHHaq5HcQoAAABQeyJvcmlnaW4iOiJodHRwczovL3RocmVlanMub3JnOjQ0MyIsImZlYXR1cmUiOiJXZWJWUjEuMU02MiIsImV4cGlyeSI6MTUzMjUyNjI5OH0=">
+		<!-- Origin Trial Token, feature = WebXR Device API, origin = https://threejs.org, expires = 2018-07-21 -->
+		<meta http-equiv="origin-trial" data-feature="WebXR Device API" data-expires="2018-07-21" content="Anlf1R/bCOUxOEgGI/9TWuzHHNxBMfZSTUMDCN7cLwDj2gpLwgA1K0DPwOzO/O0Jwaur5bsHo7k9KXx+6g+82wIAAABQeyJvcmlnaW4iOiJodHRwczovL3RocmVlanMub3JnOjQ0MyIsImZlYXR1cmUiOiJXZWJYUkRldmljZSIsImV4cGlyeSI6MTUzMjE2NjIyNX0=">
+		<!-- Origin Trial Token, feature = WebXR Gamepad Support, origin = https://threejs.org, expires = 2018-07-21 -->
+		<meta http-equiv="origin-trial" data-feature="WebXR Gamepad Support" data-expires="2018-07-21" content="ArDsXbwATKHPmvQiPlEIWNCt4DlEjB7bLj9vOgoNmL8r38U+wQNYZyUvjQIqqzgACciUUuAnxluTIL7nNkI89gcAAABYeyJvcmlnaW4iOiJodHRwczovL3RocmVlanMub3JnOjQ0MyIsImZlYXR1cmUiOiJXZWJYUkdhbWVwYWRTdXBwb3J0IiwiZXhwaXJ5IjoxNTMyMTY2MjI1fQ==">
+	<meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+		<style>
+			body {
+				background-color: #000000;
+				margin: 0px;
+				overflow: hidden;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+				font-weight: bold;
+				text-align:center;
+			}
+			a {
+				color:#0078ff;
+			}
+			#info {
+    		z-index: 10000;
+    		background-color: rgba(0,0,0,0.4);
+   	 		display: none;
+    		margin: 0 auto;
+    		width: 100%;
+    		height: 100vh;
+    		text-align: center;
+    		letter-spacing: 0.15rem;
+    		padding-top: 45vh;
+    		color: #fff;
+    		font-weight: 100;
+    		position: absolute;
+    		left: 50%;
+    		top: 65%;
+    		-webkit-transform: translate(-50%, -50%);
+    		-moz-transform: translate(-50%, -50%);
+    		-ms-transform: translate(-50%, -50%);
+    		-o-transform: translate(-50%, -50%);
+    		transform: translate(-50%, -50%);
+			}
+			#overlay {
+				position: absolute;
+				z-index: 1;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height:100%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				opacity: 0.5;
+				background-color: #000000;
+				color: #ffffff;
+			}
+			#overlay > div {
+				text-align: center;
+			}
+			#overlay > div > button {
+				height: 20px;
+				width: 100px;
+				background: transparent;
+				color: #ffffff;
+				outline: 1px solid #ffffff;
+				border: 0px;
+				cursor: pointer;
+			}
+			#overlay > div > p {
+				color: #777777;
+				font-size: 12px;
+			}
+			#startButton{
+				background-color: transparent; /* Green */
+  				color: blue;
+				
+				
+				
+			}
+			#startButton:hover{
+				background-color: transparent; /* Green */
+  				color: grey;
+				
+				
+			}
+		</style>
+		<script id="vertexShader" type="x-shader/x-vertex">
+			varying vec2 vUv;
+			void main() {
+				vUv = uv;
+				gl_Position = vec4( position, 1.0 );
+			}
+		</script>
+		<script id="fragmentShader" type="x-shader/x-fragment">
+			uniform sampler2D tAudioData;
+			varying vec2 vUv;
+			void main() {
+				vec3 backgroundColor = vec3( 0.125, 0.125, 0.125 );
+				vec3 color = vec3( 1.0, 1.0, 0.0 );
+				float f = texture2D( tAudioData, vec2( vUv.x, 0.0 ) ).r;
+				float i = step( vUv.y, f ) * step( f - 0.0125, vUv.y );
+				gl_FragColor = vec4( mix( backgroundColor, color, i ), 1.0 );
+			}
+		</script>
+	</head>
+	<body>
+		<div id="info">
+		</div>
+		<script src="../build/three.js"></script>
+		<script src="js/Detector.js"></script>
+		<script src="js/libs/stats.min.js"></script>
+		<script src="js/libs/dat.gui.min.js"></script>
+		<script src="scripts/velocity.min.js"></script>
+		<script src="scripts/three.min.js"></script>
+		<script src="scripts/dat.gui.min.js"></script>
+		<script src="scripts/stats.min.js"></script>
+		<script src="/three.js/main/audioLoader.js"></script>
+		<script src="/three.js/main/Projector.js"></script>
+		<script src="scripts/OrbitControls.js"></script>
+		<script src="scripts/particle.js"></script>
+		<script src="../build/three.js"></script>
+		<script src="js/vr/WebVR.js"></script>
+		<script src="js/third-party/gl-matrix-min.js"></script>
+    	<script src="js/third-party/wglu/wglu-debug-geometry.js"></script>
+    	<script src="js/third-party/wglu/wglu-program.js"></script>
+    	<script src="js/third-party/wglu/wglu-stats.js"></script>
+    	<script src="js/third-party/wglu/wglu-texture.js"></script>
+    	<script src="js/vr-cube-island.js"></script>
+    	<script src="js/vr-samples-util.js"></script>
+    	<script src="js/vr-audio-panner.js"></script>
+    	<script src="/audiojs/audio.min.js"></script>
+  		<script src="/three.js/main/audiojs.swf"></script>
+    	<script src="/three.js/main/audioLoader.js"></script>
+    	<script src="/audiojs/audio.min.js"></script>
+    	<script type='text/javascript' src='tween.js'></script>
+		<div id="overlay">
+		<div>
+				<button id="startButton" class="btn btn-primary">Click to Play</button>
+				<p></p>
+		</div>
+		</div>
+		<script>
+			var startButton = document.getElementById( 'startButton' );
+			startButton.addEventListener( 'click', init );
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+			var app = app || {};
+			var camera, scene, renderer, stats, materials = [], materials2 = [], analyser, parameters, light1, light2, light3, light4;
+			var mouseX = 0, mouseY = 0;
+			var layerSource;
+			var windowHalfX = window.innerWidth / 2;
+			var windowHalfY = window.innerHeight / 2;
+			var fov = 20;
+			var fftSize = 128;
+			animate();
+
+			function init() {
+				
+				var overlay = document.getElementById( 'overlay' );
+				overlay.remove();
+				layerSource = document.getElementById("webgl-canvas");
+				camera = new THREE.PerspectiveCamera( fov, window.innerWidth / window.innerHeight, 1, 2000 );
+				camera.position.z = 500;
+				scene = new THREE.Scene();
+				//scene.fog = new THREE.FogExp2( 0xafeeee, 0.0002 );
+				var col = new THREE.Color(0x1e5262);  //
+				
+				scene.background = new THREE.Color(col);   //2c778f //050404  //6ee0e0 //235e71
+				
+				var PI = Math.PI;
+				var PI2 = Math.PI * 2;
+				var PI3 = Math.PI * 3;
+				particles = new Array();
+				var listener = new THREE.AudioListener(particles);
+				var audio = new THREE.Audio( listener );
+				var mediaElement = new Audio( '' );  
+				mediaElement.loop = true;
+				mediaElement.play();
+				audio.setMediaElementSource( mediaElement );
+				analyser = new THREE.AudioAnalyser( audio, fftSize );
+				uniforms = {
+				tAudioData: { value: new THREE.DataTexture( analyser.data, fftSize / 2, 1, THREE.LuminanceFormat ) }
+				};
+				var mat = new THREE.ShaderMaterial( {
+				uniforms: uniforms,
+				vertexShader: document.getElementById( 'vertexShader' ).textContent,
+				fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+				} );
+        		for (var i = 0; i <=60; i++) {
+            		var material = new THREE.MeshLambertMaterial({
+                	fog: true,
+                	antialias: false, 
+                	transparent: true,
+                	depthTest: true,
+                	autoClear: true,
+                	autoClearColor: true,
+                	precision: "highp",
+                	dithering: true,
+                	uniforms: uniforms,
+					vertexShader: document.getElementById( 'vertexShader' ).textContent,
+					fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+                	program: function (context) {
+                    context.beginPath(i);
+                    context.ellipse(PI3, PI, PI3, PI, PI3);
+                    context.fill(i,i);
+                }
+            	});
+            	
+        		}
+				var geometry = new THREE.BufferGeometry(100, 100, 100, 100, {size: 0.1, radius: 9.0, arc: Math.cos() * 2 });
+				var material = new THREE.PointsMaterial( { 
+					vertexColors: THREE.VertexColors, 
+					uniforms: uniforms, 
+					precision: "highp", 
+					dithering: true, 
+					vertexShader: document.getElementById( 'vertexShader' ).textContent,
+					fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+					needsUpdate: true, 
+					depthTest: true, 
+					fog: true, 
+					autoClear: true, 
+					autoClearColor: true, 
+					antialias: false 
+				} ); 
+				
+				var geometry2 = new THREE.SphereBufferGeometry( 126, 130, 3.5, 38, 3.5, 2.5 );  //( 20, 50, 50, 50 );  ( 124, 130, 3.5, 38, 3.5 );
+				var vertices = [];
+				var textureLoader = new THREE.TextureLoader();
+				var sprite1 = textureLoader.load( '/three.js/main/textures/lensflare/lensflare0.png' );
+				var sprite2 = textureLoader.load( '/three.js/main/textures/sprites/ball.png' );
+				var sprite3 = textureLoader.load( '/three.js/main/textures/sprites/circle.png' );
+				var sprite4 = textureLoader.load( '/three.js/main/textures/lensflare/lensflare0.png' ); ///three.js/examples/textures/sprites/circle.png
+				var sprite5 = textureLoader.load( '/three.js/main/textures/sprites/ball.png' );
+
+				for ( var i = 0; i < 3000;  i ++ ) {
+					var x = Math.random() * 3000 - 1000;
+					var y = Math.random() * 3000 - 1000;
+					var z = Math.random() * 2000 - 1000;
+					vertices.push( x, y, z );
+				}
+				geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+				parameters = [
+					[ [ 1, 0.5, 0.5 ], sprite2, 35 ],
+					[ [ 0.95, 0.5, 0.5 ], sprite3, 35 ],
+					[ [ 0.90, 0.5, 0.5 ], sprite1, 25 ],
+					[ [ 0.85, 0.5, 0.5 ], sprite4, 12 ],
+					[ [ 0.75, 0.5, 0.5 ], sprite4, 35 ]
+				];
+				for ( var i = 0; i < parameters.length; i ++ ) {
+					var color  = parameters[ i ][ 0 ];
+					var sprite = parameters[ i ][ 1 ];
+					var size   = parameters[ i ][ 2 ];
+					//var amount = 32, object;
+					materials[ i ] = new THREE.PointsMaterial( { 
+						size: size,
+						uniforms: uniforms,
+						map: sprite,
+						precision: "highp",
+						blending: THREE.AdditiveBlending,
+						vertexShader: document.getElementById( 'vertexShader' ).textContent,
+					    fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+						dithering: true,
+						depthTest: false,
+						transparent : true,
+						antialias: false 
+					} );
+					materials[ i ].color.setHSL( color[ 0 ], color[ 1 ], color[ 2 ], color[ 3 ] );
+					materials2[ i ] = new THREE.MeshLambertMaterial( {  
+						blending: THREE.AdditiveBlending,
+						uniforms: uniforms,
+						transparent: true,
+						vertexShader: document.getElementById( 'vertexShader' ).textContent,
+					    fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+						precision: "highp",
+						dithering: true,
+						depthTest: false,
+						transparent : false,
+						antialias: false 
+					} );
+					
+					var particles = new THREE.Points( geometry, materials[i-1] );
+					var particles2 = new THREE.Points( geometry2, materials2[i-1] );
+					var particles3 = new THREE.Points( geometry, materials[i-1] );
+					parent = particles[i];
+					
+					var position = { x : 0, y: 300 };
+					var target = { x : 400, y: 50 };
+					
+					particles.rotation.x = Math.cos(6) * 6;
+					particles.rotation.y = PI3 * 5;
+					particles.raycast.z = PI2 * Math.sin(6) * Math.random();
+					
+					particles2.rotation.x = Math.cos(6) * 6;
+					particles2.raycast.y = PI3 * 5;  //copy
+					particles2.rotation.z = PI2 * Math.sin(6) * Math.random();
+					
+					particles3.rotation.x = Math.cos(6) * 6;
+					particles3.raycast.y = PI3 * 5; //copy
+					particles3.children.z = PI2 * Math.sin(6) * Math.random();
+					
+					scene.add( particles, particles2[i], particles3 );  //,particles4
+				}
+
+	if (navigator.getVRDisplays) {
+	navigator.getVRDisplays().then(function (displays) {
+    if (displays.length > 0) {
+    	
+      // We reuse this every frame to avoid generating garbage
+      frameData = new VRFrameData();
+      vrDisplay = displays[0];
+      var leftEye = vrDisplay.getEyeParameters("left");
+      var rightEye = vrDisplay.getEyeParameters("right");
+      layerSource.width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
+      layerSource.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
+	} else {
+      
+    }
+	}).catch(function (err) {
+    // VR Displays are not accessible in this context.
+    
+	});
+	} else {
+	
+	}
+				renderer = new THREE.WebGLRenderer({
+				depthTest: false,
+				antialias: false,
+				autoClear: true,
+				autoClearColor: true,
+			    precision: "highp" 
+				});
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.vr.enabled = true;
+				renderer.autoClearColor = true;
+				document.body.appendChild( renderer.domElement );
+				document.body.appendChild( WEBVR.createButton( renderer ) );
+				renderer.setAnimationLoop( render );
+				stats = new Stats();
+				document.body.appendChild( stats.dom );
+				var params = {
+					texture: false
+				};
+				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+				document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+				window.addEventListener( 'resize', onWindowResize, false );
+			}
+			function enterVRButtonClicked() {
+    		vrDisplay.requestPresent([{ source: layerSource }]).then(function () {
+        	vrDisplay.requestAnimationFrame(onAnimationFrame);
+    		}).catch(function (err) {
+        	
+    		});
+    		};
+			function onWindowResize() {
+				windowHalfX = window.innerWidth / 2;
+				windowHalfY = window.innerHeight / 2;
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+			function onDocumentMouseMove( event ) {
+				mouseX = event.clientX - windowHalfX;
+				mouseY = event.clientY - windowHalfY;
+			}
+			function onDocumentTouchStart( event ) {
+				if ( event.touches.length === 1 ) {
+					event.preventDefault();
+					mouseX = event.touches[ 0 ].pageX - windowHalfX;
+					mouseY = event.touches[ 0 ].pageY - windowHalfY;
+				}
+			}
+			function onDocumentTouchMove( event ) {
+				if ( event.touches.length === 0 ) {
+					event.preventDefault();
+					mouseX = event.touches[ 0 ].pageX - windowHalfX;
+					mouseY = event.touches[ 0 ].pageY - windowHalfY;
+				}
+			}
+		function onAnimationFrame(timestamp) {
+		
+		vrDisplay.requestAnimationFrame(onAnimationFrame);
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		update(timestamp);
+		vrDisplay.getFrameData(frameData);
+		gl.viewport(0, 0, layerSource.width * 0.5, layerSource.height);
+		render(frameData.leftProjectionMatrix, frameData.leftViewMatrix);
+		gl.viewport(layerSource.width * 0.5, 0, layerSource.width * 0.5, layerSource.height);
+		render(frameData.rightProjectionMatrix, frameData.rightViewMatrix);
+		vrDisplay.submitFrame();
+		}
+			function animate() {
+				requestAnimationFrame( animate );
+				render();
+				stats.update();
+				tween.update(time);
+			}
+			function render(projectionMat, viewMat, tAudioData) {
+				analyser.getFrequencyData();
+				uniforms.tAudioData.value.needsUpdate = true;
+				var time = performance.now(tAudioData) * 0.00005;
+				camera.position.x += ( mouseX - camera.position.x ) * 0.05;
+				camera.position.y += ( - mouseY - camera.position.y ) * 0.5;
+				camera.lookAt( scene.position );
+
+				for ( var i = 0; i < scene.children.length; i ++ ) {
+					var object = scene.children[ i ];
+					if ( object instanceof THREE.Points ) {
+						object.rotation.z = time * ( i <= 6 ? i + 1 : - ( i + 1 ) );
+					}
+				}
+				for ( var i = 0; i < materials.length; i ++ ) {
+					var color = parameters[ i ][ 0 ];
+					var h = ( 360 * ( color[ 0 ] + time ) % 360 ) / 360;
+					materials[ i ].color.setHSL( h, color[ 0 ], color[ 2 ] );
+				}
+				renderer.render( scene, camera );
+			}
+			var GuiControls = function(){
+            this.intensity = 2;
+            this.toggleRed = true;
+            this.toggleGreen = true;
+            this.toggleBlue = true;
+            this.fov = 35;
+            this.R = 1;
+            this.G = 1;
+            this.B = 1;
+            this.radius = 9;
+            this.a = 1;
+            this.b = 2;
+            this.angle = 11;
+            this.aWavy = 1.20;
+            this.bWavy = 1;
+            this.wavyAngle = 2.44;
+            this.aFlower = 25;
+            this.bFlower = 15;
+            this.flowerAngle = 2.86;
+            this.spiral = true;
+            this.wavySpiral = true;
+            this.flower = true;
+            this.circle = true;
+            this.animate = true;
+        };
+        var spiral = new GuiControls();
+        var gui = new dat.GUI();
+        gui.closed = true;
+        gui.add(spiral, 'animate').name('ANIMATE');
+        gui.add(spiral, 'intensity', 0.9, 1).name('Intensity');
+        gui.add(spiral, 'fov', 1, 75).name('Zoom Distance');
+        // visualizer type checkboxes
+        gui.add(spiral, 'spiral').name('Spiral').listen().onChange(function(){
+            spiral.spiral = true;
+            spiral.wavySpiral = true;
+            spiral.flower = false;
+            spiral.circle = false;
+            spiralFolder.open();
+            wavySpiralFolder.open();
+            flowerFolder.close();
+            circleFolder.close();
+        });
+        gui.add(spiral, 'wavySpiral').name('Wavy Spiral').listen().onChange(function(){
+            spiral.spiral = false;
+            spiral.wavySpiral = true;
+            spiral.flower = false;
+            spiral.circle = false;
+            spiralFolder.close();
+            wavySpiralFolder.open();
+            flowerFolder.close();
+            circleFolder.close();
+        });
+        gui.add(spiral, 'flower').name('Flower').listen().onChange(function(){
+            spiral.spiral = false;
+            spiral.wavySpiral = false;
+            spiral.flower = true;
+            spiral.circle = false;
+            spiralFolder.close();
+            wavySpiralFolder.close();
+            flowerFolder.open();
+            circleFolder.close();
+        });
+        gui.add(spiral, 'circle').name('Circle').listen().onChange(function(){
+            spiral.spiral = false;
+            spiral.wavySpiral = false;
+            spiral.flower = false;
+            spiral.circle = true;
+            spiralFolder.close();
+            wavySpiralFolder.close();
+            flowerFolder.close();
+            circleFolder.open();
+        });
+        var spiralFolder = gui.addFolder('Spiral Controls');
+        spiralFolder.add(spiral,'a', 0, 50).step(0.1).name('Inner Radius');
+        spiralFolder.add(spiral,'b', 0, 5).step(0.01).name('Outer Radius');
+        spiralFolder.add(spiral,'angle', 0, 50).step(.1).name('Angle');
+        var wavySpiralFolder = gui.addFolder('Wavy Spiral Controls');
+        wavySpiralFolder.add(spiral,'aWavy', 0, 50).step(0.01).name('Inner Radius');
+        wavySpiralFolder.add(spiral,'bWavy', 0, 3).step(0.01).name('Outer Radius');
+        wavySpiralFolder.add(spiral,'wavyAngle', 1, 4).step(0.01).name('Angle');
+        wavySpiralFolder.open();
+        var flowerFolder = gui.addFolder('Flower Controls');
+        flowerFolder.add(spiral,'aFlower', 0, 50).step(0.01).name('Inner Radius');
+        flowerFolder.add(spiral,'bFlower', 0, 3).step(0.01).name('Outer Radius');
+        flowerFolder.add(spiral,'flowerAngle', 1, 4).step(0.01).name('Angle');
+        var circleFolder = gui.addFolder('Circle Controls');
+        circleFolder.add(spiral, 'radius', 10, 100).name('Radius');
+        
+        gui.add(spiral, 'toggleBlue').name('Red Emphasis').listen().onChange(function(){
+            spiral.toggleRed = true;
+            spiral.toggleGreen = true;
+            spiral.toggleBlue = false;
+        });
+        gui.add(spiral, 'toggleGreen').name('Green Emphasis').listen().onChange(function(){
+            spiral.toggleRed = false;
+            spiral.toggleGreen = true;
+            spiral.toggleBlue = true;
+        });
+        gui.add(spiral, 'toggleBlue').name('Blue Emphasis').listen().onChange(function(){
+            spiral.toggleRed = true;
+            spiral.toggleGreen = true;
+            spiral.toggleBlue = true;
+        });
+
+		</script>
+		
+	</body>
+	
+</html>

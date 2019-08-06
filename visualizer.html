@@ -1,0 +1,457 @@
+
+<!DOCTYPE html>
+	<head>
+		<title>VR Audio Visualizer</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<script src="/three.js/src/renderers/webvr/WebVRManager.js"></script>
+		<script src="js/objects/Lensflare.js"></script>
+		<script src="../build/three.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r79/three.min.js"></script>
+		<script src="js/libs/stats.min.js"></script>
+		<script src="scripts/velocity.min.js"></script>
+		<script src="scripts/three.min.js"></script>
+		<script src="scripts/stats.min.js"></script>
+		<script src="scripts/audioLoader.js"></script>
+		<script src="scripts/OrbitControls.js"></script>
+		<script src="scripts/particle.js"></script>
+		<script src="scripts/jquery.min.js"></script>
+		<script type="text/javascript" src="Tween.js"></script>
+		<script src="js/shaders/CopyShader.js"></script>
+		<script src="js/shaders/FXAAShader.js"></script>
+		<script src="js/postprocessing/EffectComposer.js"></script>
+		<script src="js/postprocessing/RenderPass.js"></script>
+		<script src="js/postprocessing/ShaderPass.js"></script>
+		<script src="js/renderers/WebGLDeferredRenderer.js"></script>
+		<script src="js/loaders/GLTFLoader.js"></script>
+		<script src= "examples/audioLoader.js"></script>
+		<script src= "examples/actions.js"></script>
+		<script src= "examples/auth.js"></script>
+		<script src= "examples/callback.js"></script>
+		<script src= "examples/index.js"></script>
+		<script src= "examples/login.js"></script>
+		<script src= "examples/config.js"></script>
+		<script src="../../src/howler.core.js"></script>
+  		<script src="./siriwave.js"></script>
+  		<script src="./player.js"></script>
+  		<script src="/three.js/examples/audio.js"></script>
+  		<script src="/audiojs/audio.min.js"></script>
+		<script src="js/libs/dat.gui.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="/three.js/examples/styles.css">
+	</head>
+	<body>
+	
+	<script>
+		
+		</script>
+		
+	<script>
+		
+		var app = app || {};
+		app.init = init;
+		app.animate = animate;
+			var camera, scene, renderer, stats;
+			var fftSize = 128;
+			var geometry, root;
+			var mouseX = 0, mouseY = 0;
+			var windowHalfX = window.innerWidth / 2;
+			var windowHalfY = window.innerHeight / 2;
+			init();
+			animate();
+			
+		
+			function init() {
+				/*global Tween*/
+				camera = new THREE.PerspectiveCamera( 116, window.innerWidth / window.innerHeight, 60, 188800 );
+				camera.position.z = 500;
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0x000000 );   //010102 000026 4d81e8 2162e3 2793e8 0x0d001a  0076A2  0x1990BB  2F9BC1
+				
+				
+				var geometry = new THREE.TorusBufferGeometry( 302, 3, { radius: 9.0, arc: Math.cos() * 1 } );  //( 20, 50, 50, 50 ); ( 124, 130, 4, 38, 3.6, 2.9, 0 );
+				var material = new THREE.PointsMaterial( { color: 0x42C0FB, needsUpdate: true, depthTest: true, fog: false, autoClear: true, autoClearColor: true, antialias: true } ); //00baff 0080ff 24a5e1 892d0 016cf7 recent:3676e5 2b6be4 3d84ff 70A4FF f8f0a4 fce996 fdb813  FCD853 FDCB64 meshbasic
+				var geometry2 = new THREE.ConeBufferGeometry( 126, 130, 3.5, 38, 3.5, 2.5 );  //( 20, 50, 50, 50 );  ( 124, 130, 3.5, 38, 3.5 );
+				var material2 = new THREE.MeshNormalMaterial( { blending: THREE.AdditiveBlending, arc: Math.cos() * 2, size: 2.0, needsUpdate: true, depthTest: true, fog: false, autoClear: true, autoClearColor: true, antialias: true  } );
+				var geometry3 = new THREE.TorusBufferGeometry( 202, 3 );  //( 20, 50, 50, 50 );
+				var mat3 = new THREE.PointsMaterial( { color: 0x3676e5, needsUpdate: true, depthTest: true, fog: true, autoClear: true, autoClearColor: true, antialias: true, size: 5.0 }); // bdf7 ff32ff 00ffff ff8000 fe9813 FFAE19 FFA500 ffb83d xefa419 8ffcff
+				
+				
+				var geometry4 = new THREE.TorusBufferGeometry( 124, 18, 2, 1 );  //( 20, 50, 50, 50 );
+				var mat4 = new THREE.PointsMaterial( { color: 0xb4b4b4, needsUpdate: true, depthTest: true, fog: true, autoClear: true, autoClearColor: true });  //ff980f 29b8fa 42C0FB 67C8FF 66e6d9 
+				var starsGeometry = new THREE.Geometry();
+				var starsMaterial = new THREE.MeshPhongMaterial( { color: 0xb4b4b4, needsUpdate: true, opacity: 0.5, size: 0.2, autoClear: true, autoClearColor: true } );
+				var starField = new THREE.Points( starsGeometry, starsMaterial );
+				scene.add( starField );
+				var starsGeometry2 = new THREE.Geometry();
+				var starsMaterial2 = new THREE.PointsMaterial( { color: 0x00b3b3, depthTest: true, needsUpdate: true, opacity: 0.9, autoClear: true, autoClearColor: true } );
+				var starField2 = new THREE.Points( starsGeometry2, starsMaterial2 );
+				scene.add( starField2 );
+				var starsGeometry3 = new THREE.Geometry();
+				var starsMaterial3 = new THREE.PointsMaterial( { color: 0x00b3b3, opacity: 2.0, depthTest: true, needsUpdate: true, opacity: 0.5, autoClear: true, autoClearColor: true } );
+				var starField3 = new THREE.Points( starsGeometry3, starsMaterial3 );
+				scene.add( starField3 );
+				var starsGeometry4 = new THREE.Geometry();
+				var starsMaterial4 = new THREE.PointsMaterial( { color: 0xffffff, size: 0.2, depthTest: true, needsUpdate: true, opacity: 0.5, autoClear: true, autoClearColor: true } );
+				var starField4 = new THREE.Points( starsGeometry4, starsMaterial4 );
+				scene.add( starField4 );
+				var starsGeometry5 = new THREE.Geometry();
+				var starsMaterial5 = new THREE.PointsMaterial( { color: 0x939393, size: 0.2, depthTest: true, needsUpdate: true, opacity: 0.5, autoClear: true, autoClearColor: true } );
+				var starField5 = new THREE.Points( starsGeometry5, starsMaterial5 );
+				scene.add( starField5 );
+				var starsGeometry6 = new THREE.Geometry();
+				var starsMaterial6 = new THREE.PointsMaterial( { color: 0x42fbda, size: 0.2, depthTest: true, needsUpdate: true, opacity: 0.5, autoClear: true, autoClearColor: true } );
+				var starField6 = new THREE.Points( starsGeometry6, starsMaterial6 );
+				scene.add( starField6 );
+				
+				var points = [];
+				for ( var i = 0; i < 1; i ++ ) {
+				points.push( new THREE.Vector2( Math.sin( i * 0.2 ) * 10 + 5, ( i - 5 ) * 2 ) ); //when this block is deleted, the music player suddenly shows up
+				}
+				
+    			material3 = new THREE.PointsMaterial( {
+        		vertexColors: THREE.VertexColors,
+        		needsUpdate: true,
+        		depthTest: true,
+        		opacity: 3,
+        		sizeAttenuation: true
+    			} );
+    			
+    			points = new THREE.Points( geometry, material3 );
+    			points2 = new THREE.Points(geometry2, material);
+    			points3 = new THREE.Points(geometry2, material3);
+    			
+    			for ( var i = 0; i < geometry.length; i ++ ) {
+    			scene.add( points );
+    			scene.add( points2 );
+    			scene.add( points3 );
+    			}
+    			
+				root = new THREE.Mesh( geometry, material );
+				root.position.x = 2000;
+				
+				scene.add( root );
+				root2 = new THREE.Mesh( geometry2, material2 );
+				root2.position.x = 2000
+				scene.add( root2 );
+				
+				root3 = new THREE.Mesh( geometry3, mat3 );
+				root3.position.x = 2000;
+				scene.add( root3 );
+				
+				root4 = new THREE.Mesh( geometry4, mat4 );
+				root4.position.x = 2000; 
+				scene.add( root3 );
+				
+				var amount = 320, object, parent = root;
+				var amount2 = 320, object2, parent2 = root2;
+				var amount3 = 320, object3, parent3 = root3;
+				var amount4 = 320, object4, parent4 = root4;
+				
+				for ( var i = 0; i < 320; i ++ ) {
+				var star6 = new THREE.Vector2();
+				star6.x = Math.random() * 6;
+				star6.y = Math.random() * 6;
+				star6.z = Math.random() * 6;
+				starsGeometry5.vertices.push( star6 );
+				}
+				parent=star;
+				
+				for ( var i = 0; i < 420; i ++ ) {
+				var star5 = new THREE.Vector3();
+				star5.x = THREE.Math.randFloatSpread( 25000 );
+				star5.y = THREE.Math.randFloatSpread( 25000 );
+				star5.z = THREE.Math.randFloatSpread( 20000 );
+				starsGeometry5.vertices.push( star5 );
+				}
+				
+				for ( var i = 0; i < 420; i ++ ) {
+				var star4 = new THREE.Vector3();
+				star4.x = THREE.Math.randFloatSpread( 10000 );
+				star4.y = THREE.Math.randFloatSpread( 20000 );
+				star4.z = THREE.Math.randFloatSpread( 10000 );
+				starsGeometry4.vertices.push( star4 );
+				}
+				
+				for ( var i = 0; i < 420; i ++ ) {
+				var star3 = new THREE.Vector3();
+				star3.x = THREE.Math.randFloatSpread( 15000 );
+				star3.y = THREE.Math.randFloatSpread( 25000 );
+				star3.z = THREE.Math.randFloatSpread( 10000 );
+				starsGeometry3.vertices.push( star3 );
+				}
+				
+				for ( var i = 0; i < 420; i ++ ) {
+				var star2 = new THREE.Vector3();
+				star2.x = THREE.Math.randFloatSpread( 20000 );
+				star2.y = THREE.Math.randFloatSpread( 25000 );
+				star2.z = THREE.Math.randFloatSpread( 15000 );
+				starsGeometry2.vertices.push( star2 );
+				}
+				parent=star2;
+				
+				for ( var i = 0; i < 420; i ++ ) {
+				var star = new THREE.Vector3();
+				star.x = THREE.Math.randFloatSpread( 20000 );
+				star.y = THREE.Math.randFloatSpread( 25000 );
+				star.z = THREE.Math.randFloatSpread( 15000 );
+				starsGeometry.vertices.push( star );
+				}
+				parent=star;
+				
+				for ( var i = 0; i < amount3; i ++ ) {
+					object4 = new THREE.Mesh( geometry3, mat4 );
+					object4.position.z =  2000;
+					parent4.add( object4 );
+					parent4 = object4;
+				}
+				parent4 = root4;
+				
+				for ( var i = 0; i < amount3; i ++ ) {
+					object4 = new THREE.Mesh( geometry3, mat4 );
+					object4.position.x =  2000;
+					parent4.add( object4 );
+					parent4 = object4;
+				}
+				parent4 = root;
+				
+				for ( var i = 0; i < amount3; i ++ ) {
+					object4 = new THREE.Mesh( geometry4, mat4 );
+					object4.position.z =  2000;
+					parent4.add( object4 );
+					parent4 = object4;
+				}
+				parent4 = root4;
+				
+				for ( var i = 0; i < amount; i ++ ) {
+					object3 = new THREE.Mesh( geometry3, mat3 );
+					object3.position.x =  2000;
+					parent3.add( object3 );
+					parent3 = object3;
+				}
+				parent3 = root;
+				
+				for ( var i = 0; i < amount2; ++ i ) {
+					object3 = new THREE.Mesh( geometry3, mat3 );
+					object3.position.x =  2000;
+					parent3.add( object3 );
+					parent3 = object3;
+				}
+				parent3 = root;
+				
+				for ( var i = 0; i < amount2; ++ i ) {
+					object2 = new THREE.Mesh( geometry2, material2 );
+					object2.position.z =  2000;
+					parent2.add( object2 );
+					parent2 = object2;
+				}
+				parent2 = root;
+				
+				for ( var i = 0; i < amount2; i ++ ) {
+					object2 = new THREE.Mesh( geometry2, material2 );
+					object2.position.y =  2000;
+					parent2.add( object2 );
+					parent2 = object2;
+				}
+				parent2 = root;
+				
+				for ( var i = 0; i < amount; i ++ ) {
+					object = new THREE.Mesh( geometry, material );
+					object.position.x =  1000; //was -2000
+					parent.add( object );
+					parent = object;
+				}
+
+				parent = root;
+
+				for ( var i = 0; i < amount; i ++ ) {
+					object = new THREE.Mesh( geometry, material );
+					object.position.x = - 2000;
+					parent.add( object );
+					parent = object;
+				}
+
+				parent = root;
+
+				for ( var i = 0; i < amount; i ++ ) {
+					object = new THREE.Mesh( geometry, material );
+					object.position.x = - 2000;
+					parent.add( object );
+					parent = object;
+				}
+
+				parent = root;
+
+				for ( var i = 0; i < amount; i ++ ) {
+					object = new THREE.Mesh( geometry, material );
+					object.position.x = 2000;
+					parent.add( object );
+					parent = object;
+				}
+
+				parent = root;
+
+				for ( var i = 0; i < amount; i ++ ) {
+					object = new THREE.Mesh( geometry, material );
+					object.position.z = - 46130;
+					parent.add( object );
+					parent = object;
+				}
+
+				parent = root;
+
+				for ( var i = 0; i < amount; i ++ ) {
+					object = new THREE.Mesh( geometry, material );
+					object.position.z = 40130;
+					parent.add( object );
+					parent = object;
+				}
+				parent = root;
+				
+			renderer = new THREE.WebGLRenderer();
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			//renderer.vr.enabled = true;
+			document.body.appendChild( renderer.domElement );
+			
+            renderer.autoClearColor = true;
+            stats = new Stats();
+            document.body.appendChild(stats.dom);
+            document.addEventListener('mousemove', onDocumentMouseMove, false);
+            window.addEventListener('resize', onWindowResize, false);
+				
+			}
+			
+			
+			
+			
+			function onWindowResize() {
+				windowHalfX = window.innerWidth / 2;
+				windowHalfY = window.innerHeight / 2;
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+
+			function onDocumentMouseMove( event ) {
+				mouseX = ( event.clientX - windowHalfX ) * 8;
+				mouseY = ( event.clientY - windowHalfY ) * 8;
+			}
+
+			function animate() {
+				requestAnimationFrame( animate );
+				stats.update();
+				render();
+				
+			}
+			
+			function render() {
+				/*global THREE*/
+				/*global fftSize*/
+				/*global performance*/
+				/*global root2*/
+				/*global root3*/
+				/*global root4*/
+				/*global star5*/
+				/*global textureFlare0*/
+				/*global textureFlare3*/
+				/*global app*/
+				/*global object3*/
+				
+				var time = performance.now() * 0.000004;    
+				var rx = Math.abs(Math.sin(Math.sin( time) * 2.6 ) * Math.sin( 1.2 ) * 6.2);
+				var ry = Math.abs(Math.cos( time * 1.0 ) * Math.sin( 3.4 ) * .1); 
+				var rz = Math.cos( time * 4.0 ) * Math.sin( .2 )  * .001;
+				var rs2 = (Math.cos( time ) * 3.0 ) * Math.sin( .8 ) * .01;
+				var ry2 = Math.cos( time * 4.0 ) * Math.sin( .2 ) * .001;    //4.0               
+				var rs3 = Math.cos(Math.cos( time) * 1.02 ) * .8;					
+				var rs4 = Math.abs(Math.cos( time * 1.02 ) * Math.sin( .2 ) * 5);					
+				var rs5 = Math.abs(Math.sin(Math.cos( time) * 1.02 ) * Math.sin( .2 ) * 6.6);
+				var sx = Math.abs(Math.sin(Math.cos( time) * 1.02 ) * Math.sin( .2 ) * 6.6);
+				var sz = Math.abs(Math.sin(Math.cos( time) * 1.02 ) * Math.sin( .2 ) * 6.6);
+				
+				camera.position.x += ( mouseX - camera.position.x ) * 0.1;
+				camera.position.y += ( - mouseY - camera.position.y ) * 0.1;
+				camera.lookAt( scene.position );
+				renderer.render( scene, camera )
+				
+				root.traverse( function ( object ) {
+					object.rotation.x = rx*.72;
+					object.rotation.y = ry;
+					object.parent.z = rz;
+					object.rotation.z = rs2;
+					object.parent.y = ry2;
+					object.parent.x = rs3;
+				} 
+				);
+				
+				root2.traverse( function ( object2 ) {
+					object2.rotation.x = rx;
+					object2.rotation.y = ry;
+					object2.parent.z = rz;
+					object2.rotation.z = rs4;
+					object2.parent.y = ry2;    //ry2
+					object2.parent.x = rs3;
+				}
+				);
+				
+				root2.traverse( function ( object3 ) {
+					object3.rotation.x = rx;
+					object3.rotation.y = ry;
+					object3.parent.z = rz;
+					object3.parent.y = ry2;
+					object3.parent.x = rs3;
+				}
+				);
+				
+				
+				root4.traverse( function ( object4 ) {
+					object4.rotation.x.Math.sin = rx;
+					object4.rotation.y = ry;
+					object4.parent.z = rz;
+					object4.rotation.z = rs4;
+					object4.parent.y = ry2;
+					object4.parent.x = rs5;
+				}
+				);
+				
+				root2.traverse( function ( star ) {
+				star.rotation.x = Math.sin(rx);
+				star.rotation.y = Math.sin(rx);
+				star.rotation.z = Math.sin(rx);
+				}
+				);
+				
+				root3.traverse( function ( star2 ) {
+				star2.rotation.x = Math.sin(rx);
+				star2.rotation.y = Math.sin(rx);
+				star2.rotation.z = Math.sin(rx);
+				}
+				);
+				
+				star5.traverse( function ( star3 ) {
+				star3.rotation.x = Math.sin(ry);
+				star3.rotation.y = Math.sin(ry);
+				star3.rotation.z = Math.sin(ry);
+				}
+				);
+				
+				                                    
+				
+			}
+			
+</script>
+		
+		<div id="container"></div>
+		<div id="info">
+    <h1></h1>
+    <h3></h3>
+    <p></p>
+</div>
+
+
+	 	
+	</html>
+	
+
+	
+	
